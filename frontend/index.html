@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letterboxd Blend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #14181c;
+            color: #9ab;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(135deg, rgba(20,24,28,0.95) 0%, rgba(20,24,28,0.98) 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect fill="%2314181c" width="800" height="800"/><circle cx="200" cy="200" r="150" fill="%23ff8000" opacity="0.03"/><circle cx="600" cy="400" r="200" fill="%2300e054" opacity="0.03"/><circle cx="300" cy="600" r="180" fill="%23ff8000" opacity="0.02"/></svg>');
+            background-size: cover;
+            z-index: -1;
+            animation: bgPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00e054 0%, #ff8000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 224, 84, 0.3)); }
+            50% { filter: drop-shadow(0 0 30px rgba(255, 128, 0, 0.4)); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #9ab;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #678;
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .upload-section {
+            background: rgba(32, 40, 48, 0.6);
+            border: 2px solid rgba(255, 128, 0, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 700px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-section h2 {
+            color: #fff;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #00e054;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            background: rgba(20, 24, 28, 0.8);
+            border: 2px solid rgba(0, 224, 84, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #00e054;
+            background: rgba(0, 224, 84, 0.05);
+        }
+
+        .upload-box {
+            background: rgba(20, 24, 28, 0.8);
+            border: 2px dashed rgba(0, 224, 84, 0.3);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-box:hover {
+            border-color: rgba(0, 224, 84, 0.6);
+            background: rgba(0, 224, 84, 0.05);
+            transform: translateY(-3px);
+        }
+
+        .upload-box::before {
+            content: '📁';
+            display: block;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-box input[type="file"] {
+            display: none;
+        }
+
+        .upload-box p {
+            color: #9ab;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .file-name {
+            color: #00e054;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .blend-button {
+            width: 100%;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #00e054 0%, #00b843 100%);
+            color: #14181c;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .blend-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .blend-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .blend-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 224, 84, 0.4);
+        }
+
+        .blend-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border: 4px solid rgba(0, 224, 84, 0.2);
+            border-top: 4px solid #00e054;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #00e054;
+            font-size: 1.1rem;
+            font-weight: 600;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            animation: slideUp 0.5s ease-out;
+            display: none;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .message.success {
+            background: rgba(0, 224, 84, 0.2);
+            border: 1px solid rgba(0, 224, 84, 0.5);
+            color: #00e054;
+        }
+
+        .message.error {
+            background: rgba(255, 80, 80, 0.2);
+            border: 1px solid rgba(255, 80, 80, 0.5);
+            color: #ff5050;
+        }
+
+        .message.warning {
+            background: rgba(255, 128, 0, 0.2);
+            border: 1px solid rgba(255, 128, 0, 0.5);
+            color: #ff8000;
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeIn 1s ease-out;
+            margin-top: 60px;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .section-subtitle {
+            color: #678;
+            font-size: 1.1rem;
+        }
+
+        .blend-score-hero {
+            background: linear-gradient(135deg, rgba(0, 224, 84, 0.2) 0%, rgba(255, 128, 0, 0.2) 100%);
+            border: 2px solid rgba(0, 224, 84, 0.4);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blend-score-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 224, 84, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .blend-score-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .blend-score-number {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00e054 0%, #ff8000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        .blend-score-label {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .share-button {
+            background: rgba(255, 128, 0, 0.2);
+            border: 2px solid #ff8000;
+            color: #ff8000;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .share-button:hover {
+            background: rgba(255, 128, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 224, 84, 0.1) 0%, rgba(255, 128, 0, 0.1) 100%);
+            border: 1px solid rgba(0, 224, 84, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 224, 84, 0.2);
+            border-color: #00e054;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00e054 0%, #ff8000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #9ab;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .films-container {
+            margin-bottom: 80px;
+        }
+
+        .films-container h3 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .films-container h3::before {
+            content: '🎞️';
+            font-size: 2.5rem;
+        }
+
+        .film-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .film-card {
+            background: rgba(32, 40, 48, 0.6);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .film-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 224, 84, 0.3);
+        }
+
+        .film-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, rgba(0, 224, 84, 0.2) 0%, rgba(255, 128, 0, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .film-poster::after {
+            content: 'Watched by both 🎬';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 224, 84, 0.95);
+            color: #14181c;
+            padding: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .film-card:hover .film-poster::after {
+            transform: translateY(0);
+        }
+
+        .film-info {
+            padding: 15px;
+        }
+
+        .film-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .film-year {
+            color: #678;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .film-rating {
+            color: #ff8000;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .watchlist-container {
+            margin-bottom: 80px;
+        }
+
+        .watchlist-container h3 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .watchlist-container h3::before {
+            content: '📋';
+            font-size: 2.5rem;
+        }
+
+        .watchlist-carousel {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .watchlist-carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .watchlist-carousel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .watchlist-carousel::-webkit-scrollbar-thumb {
+            background: rgba(0, 224, 84, 0.5);
+            border-radius: 10px;
+        }
+
+        .watchlist-card {
+            min-width: 160px;
+            background: rgba(32, 40, 48, 0.6);
+            border: 1px solid rgba(0, 224, 84, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .watchlist-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 224, 84, 0.3);
+        }
+
+        .watchlist-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #00e054;
+            color: #14181c;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #678;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 80px;
+        }
+
+        footer p {
+            margin-bottom: 15px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1.5rem;
+        }
+
+        .social-icons a {
+            color: #9ab;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: #00e054;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .description {
+                font-size: 0.9rem;
+            }
+
+            .upload-section {
+                padding: 25px 20px;
+            }
+
+            .upload-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .blend-score-number {
+                font-size: 4rem;
+            }
+
+            .blend-score-label {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .film-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .film-title {
+                font-size: 0.85rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            footer {
+                padding: 30px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .blend-score-hero {
+                padding: 40px 20px;
+            }
+
+            .blend-score-number {
+                font-size: 3rem;
+            }
+
+            .film-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blur"></div>
+    
+    <div class="container">
+        <header>
+            <h1>🎥 Letterboxd Blend</h1>
+            <p class="subtitle">Find your perfect movie match.</p>
+            <p class="description">Upload your Letterboxd export and discover your shared cinematic universe.</p>
+        </header>
+
+        <div class="upload-section">
+            <h2>Create Your Blend</h2>
+            
+            <form id="blendForm">
+                <div class="form-group">
+                    <label for="yourUsername">Your Username</label>
+                    <input type="text" id="yourUsername" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="zipFile">Upload Your Letterboxd Export</label>
+                    <div class="upload-box" onclick="document.getElementById('zipFile').click()">
+                        <input type="file" id="zipFile" accept=".zip" required>
+                        <p>Click to upload or drag & drop</p>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="friendUsername">Friend's Username</label>
+                    <input type="text" id="friendUsername" placeholder="Enter friend's username" required>
+                </div>
+
+                <button type="submit" class="blend-button" id="blendBtn">
+                    <span>🍿 Blend Now</span>
+                </button>
+
+                <div class="message" id="message"></div>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p class="loading-text">Mixing reels… Matching directors… Finding your cinematic chemistry 🎞️</p>
+            </div>
+        </div>
+
+        <div class="results-section" id="results">
+            <div class="section-header">
+                <h2 class="section-title">Your Cinematic Chemistry</h2>
+                <p class="section-subtitle" id="usersSubtitle"></p>
+            </div>
+
+            <div class="blend-score-hero">
+                <div class="blend-score-content">
+                    <div class="blend-score-number" id="blendScore">0%</div>
+                    <div class="blend-score-label">Blend Score</div>
+                    <button class="share-button" id="shareBtn" onclick="shareBlend()">📤 Share Results</button>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="stats"></div>
+
+            <div class="films-container" id="filmsContainer">
+                <h3>Top Shared Films</h3>
+                <div class="film-grid" id="filmGrid"></div>
+            </div>
+
+            <div class="watchlist-container" id="watchlistContainer">
+                <h3>Shared Watchlist Picks</h3>
+                <div class="watchlist-carousel" id="watchlistCarousel"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Made with ❤️ for film lovers — Not affiliated with Letterboxd.</p>
+            <div class="social-icons">
+                <a href="#" title="GitHub">💻</a>
+                <a href="#" title="Email">📧</a>
+                <a href="#" title="Twitter">🐦</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let currentBlendData = null;
+
+        document.getElementById('zipFile').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+        });
+
+        document.getElementById('blendForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const yourUsername = document.getElementById('yourUsername').value.trim();
+            const friendUsername = document.getElementById('friendUsername').value.trim();
+            const zipFile = document.getElementById('zipFile').files[0];
+
+            if (!zipFile) {
+                showMessage('Please select your Letterboxd export file', 'error');
+                return;
+            }
+
+            const blendBtn = document.getElementById('blendBtn');
+            const loading = document.getElementById('loading');
+            const resultsSection = document.getElementById('results');
+            
+            blendBtn.disabled = true;
+            loading.classList.add('active');
+            resultsSection.classList.remove('active');
+            hideMessage();
+
+            try {
+                showMessage('Uploading your data...', 'success');
+                await uploadUser(yourUsername, zipFile);
+                
+                showMessage('Checking friend\'s data...', 'success');
+                const friendExists = await checkUserExists(friendUsername);
+                
+                if (!friendExists) {
+                    showMessage(`Friend "${friendUsername}" hasn't uploaded their data yet. Please ask them to upload first!`, 'warning');
+                    return;
+                }
+                
+                showMessage('Generating blend...', 'success');
+                const blendData = await generateBlend(yourUsername, friendUsername);
+                
+                currentBlendData = {
+                    blend: blendData,
+                    user1: yourUsername,
+                    user2: friendUsername
+                };
+                
+                displayResults(blendData, yourUsername, friendUsername);
+                
+                resultsSection.classList.add('active');
+                showMessage('Blend created successfully! 🎉', 'success');
+                
+                setTimeout(() => {
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 500);
+                
+            } catch (error) {
+                showMessage(error.message || 'An error occurred. Please try again.', 'error');
+            } finally {
+                blendBtn.disabled = false;
+                loading.classList.remove('active');
+            }
+        });
+
+        async function uploadUser(username, file) {
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('file', file);
+
+            const response = await fetch(`${API_URL}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                throw new Error(data.detail || 'Upload failed');
+            }
+            
+            return data;
+        }
+
+        async function checkUserExists(username) {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                const data = await response.json();
+                
+                return data.success && data.users.includes(username);
+            } catch (error) {
+                throw new Error('Failed to check if friend exists');
+            }
+        }
+
+        async function generateBlend(user1, user2) {
+            const response = await fetch(`${API_URL}/blend?user1=${encodeURIComponent(user1)}&user2=${encodeURIComponent(user2)}`);
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                throw new Error(data.detail || 'Blend generation failed');
+            }
+            
+            return data.blend;
+        }
+
+        function calculateBlendScore(stats) {
+            const user1Total = stats.user1_total_rated || 1;
+            const user2Total = stats.user2_total_rated || 1;
+            const commonWatched = stats.total_common_watched || 0;
+            const commonFavorites = stats.total_common_favorites || 0;
+            
+            const overlapScore = (commonWatched / Math.min(user1Total, user2Total)) * 60;
+            const favoritesScore = (commonFavorites / Math.max(commonWatched, 1)) * 40;
+            
+            return Math.min(Math.round(overlapScore + favoritesScore), 100);
+        }
+
+        function displayResults(blend, user1, user2) {
+            document.getElementById('usersSubtitle').textContent = `${user1} × ${user2}`;
+
+            const blendScore = calculateBlendScore(blend.stats);
+            document.getElementById('blendScore').textContent = `${blendScore}%`;
+
+            const stats = blend.stats;
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_common_watched}</div>
+                    <div class="stat-label">Films Watched Together</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_common_favorites}</div>
+                    <div class="stat-label">Shared Favorites</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_common_watchlist}</div>
+                    <div class="stat-label">Shared Watchlist</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.user1_total_rated + stats.user2_total_rated}</div>
+                    <div class="stat-label">Total Films Combined</div>
+                </div>
+            `;
+
+            // Display top_common_films (top 15 films sorted by avg rating)
+            const filmGrid = document.getElementById('filmGrid');
+            const topFilms = blend.top_common_films || [];
+            
+            if (topFilms.length > 0) {
+                filmGrid.innerHTML = topFilms.map((film, index) => `
+                    <div class="film-card" style="animation-delay: ${index * 0.05}s">
+                        <div class="film-poster">🎬</div>
+                        <div class="film-info">
+                            <div class="film-title">${escapeHtml(film.name)}</div>
+                            <div class="film-year">${film.year}</div>
+                            <div class="film-rating">⭐ ${film.avg_rating.toFixed(1)} (${user1}: ${film.user1_rating.toFixed(1)} | ${user2}: ${film.user2_rating.toFixed(1)})</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                filmGrid.innerHTML = '<p style="color: #678; text-align: center; grid-column: 1/-1; padding: 40px;">No common films yet. Start watching together!</p>';
+            }
+
+            // Display common_watchlist (top 5)
+            const watchlistCarousel = document.getElementById('watchlistCarousel');
+            const watchlistItems = blend.common_watchlist || [];
+            
+            if (watchlistItems.length > 0) {
+                watchlistCarousel.innerHTML = watchlistItems.map((film, index) => `
+                    <div class="watchlist-card" style="animation-delay: ${index * 0.05}s">
+                        <div class="watchlist-badge">In both watchlists</div>
+                        <div class="film-poster">📋</div>
+                        <div class="film-info">
+                            <div class="film-title">${escapeHtml(film.name)}</div>
+                            <div class="film-year">${film.year}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                watchlistCarousel.innerHTML = '<p style="color: #678; padding: 20px;">No shared watchlist items</p>';
+            }
+        }
+
+        function shareBlend() {
+            if (!currentBlendData) return;
+
+            const { user1, user2, blend } = currentBlendData;
+            const blendScore = calculateBlendScore(blend.stats);
+            const shareText = `🎬 ${user1} × ${user2} - Blend Score: ${blendScore}%\n\n` +
+                `Shared Films: ${blend.stats.total_common_watched}\n` +
+                `Common Favorites: ${blend.stats.total_common_favorites}\n` +
+                `Shared Watchlist: ${blend.stats.total_common_watchlist}\n\n` +
+                `Create your own blend at Letterboxd Blend!`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Letterboxd Blend Results',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(err => console.log('Share cancelled'));
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showMessage('Results copied to clipboard! 📋', 'success');
+                    setTimeout(hideMessage, 3000);
+                }).catch(() => {
+                    showMessage('Could not copy to clipboard', 'error');
+                });
+            }
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} active`;
+        }
+
+        function hideMessage() {
+            document.getElementById('message').classList.remove('active');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
