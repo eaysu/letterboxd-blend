@@ -13,7 +13,8 @@ from utils.blender import blend_users
 
 app = FastAPI(title="Letterboxd Blend API")
 
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
+# Mount the StaticFiles at the root path '/'
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 @app.get("/ping")
 def ping():
